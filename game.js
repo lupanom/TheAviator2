@@ -1023,7 +1023,7 @@ function spawnDoubleGunCollectible() {
 
 
 function spawnLifeCollectible() {
-	const heart = modelManager.get('heart')
+	/*const heart = modelManager.get('heart')
 	heart.traverse(function (child) {
 		if (child instanceof THREE.Mesh) {
 			child.material.color.setHex(0xFF0000)
@@ -1034,7 +1034,7 @@ function spawnLifeCollectible() {
 
 	new Collectible(heart, () => {
 		addLife()
-	})
+	})*/
 }
 
 
@@ -1923,7 +1923,7 @@ function startMap() {
 
 function onWebsiteLoaded(event) {
 	// load audio
-	audioManager.load('ocean', null, '/audio/ocean.mp3')
+	/*audioManager.load('ocean', null, '/audio/ocean.mp3')
 	audioManager.load('propeller', null, '/audio/propeller.mp3')
 
 	audioManager.load('coin-1', 'coin', '/audio/coin-1.mp3')
@@ -1954,7 +1954,7 @@ function onWebsiteLoaded(event) {
 	audioManager.load('rock-shatter-2', 'rock-shatter', '/audio/rock-shatter-2.mp3')
 
 	// load models
-	modelManager.load('heart')
+	modelManager.load('heart')*/
 
 	ui = new UI(startMap)
 	loadingProgressManager

@@ -1,24 +1,85 @@
-<!-- Copied and modified from http://games-aviator.com/ -->
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="ad.size" content="width=300,height=600">
 	<title>The Aviator 2</title>
 	<meta name="description" content="An extension of Karim Maaloul's game The Aviator." />
 	<meta name="keywords" content="three.js, game, aviator, browser, javascript" />
 	<meta name="author" content="Michel Helms for Codrops" />
-	<link rel="icon" type="image/png" href="favicon.png"/>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="/game.css" />
+	<link rel="stylesheet" type="text/css" href="game.css" />
 	<script src="https://cdn.jsdelivr.net/npm/three@0.139.2/build/three.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/three@0.139.2/examples/js/loaders/OBJLoader.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/three@0.139.2/examples/js/controls/OrbitControls.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.2/gsap.min.js"></script>
+	<script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
 </head>
 <body>
+  <script>
+    window.edCustomData = {};
+    /*window.THREE = THREE;*/
+    /*window.gsap = gsap;*/
+
+    // If true, start function. If false, listen for INIT.
+    window.onload = async function() {
+      if (Enabler.isInitialized()) {
+        await enablerInitHandler();
+      } else {
+        Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler);
+      }
+    }
+
+    async function enablerInitHandler() {
+      //await window.edCustomData.setUp()
+      // await window.edCustomData.start()
+      document.getElementById('exit-button').addEventListener('click', () => {
+        Enabler.exit('Exit CTA');
+      })
+
+      let touchX, deltaX;
+      let isStartingSwipe = false, isCompletingSwipe = false;
+
+      ['touchstart', 'mousedown'].forEach((event) => {
+        document.addEventListener((event), (e) => {
+          touchX = e.touches ? e.touches[0].clientX : e.clientX; // salvo le coordinate del touch
+          isStartingSwipe = true;
+        })
+      });
+
+      ['touchmove', 'mousemove'].forEach((event) => {
+        document.addEventListener((event), (e) => {
+          deltaX = e.touches ? e.touches[0].clientX - touchX : e.clientX - touchX; // calcolo lo spostamento rispetto all'inizio del touch sulle x
+          touchX = e.touches ? e.touches[0].clientX : e.clientX; // salvo le nuove coordinate del touch
+
+          if (isStartingSwipe && Math.abs(deltaX) > 1) {
+            isCompletingSwipe = true;
+          }
+        })
+      });
+
+      ['touchend', 'mouseup'].forEach((event) => {
+        document.addEventListener((event), (e) => {
+          isStartingSwipe = false;
+          if (isCompletingSwipe) {
+            Enabler.counter('Hotspot1Click', false);
+            Enabler.counter('Hotspot2Click', false);
+            Enabler.counter('Hotspot3Click', true);
+          } else {
+            Enabler.counter('Hotspot1Click', false);
+            Enabler.counter('Hotspot4Click', false);
+            Enabler.counter('Hotspot5Click', true);
+          }
+
+          isCompletingSwipe = false;
+        })
+      });
+    }
+  </script>
 	<div class="game-holder" id="gameHolder">
 		<div class="header">
 			<div class="header__title-wrap">
@@ -26,7 +87,7 @@
 					<span class="header__title-pre">The</span> 
 					<span class="header__title-main">Aviator 2</span>
 				</h1>
-				<h2 class="header__tagline">An extension of Karim Maaloul's <a href="http://tympanus.net/codrops/?p=26501" class="hover-line">The Aviator</a></h2>
+        <h2 id="exit-button">CTA DI TEST</h2>
 			</div>
 			<div class="score" id="score">
 				<div class="score__content" id="level">
@@ -34,7 +95,7 @@
 					<div class="score__value score__value--level" id="levelValue">1</div>
 					<svg class="level-circle" id="levelCircle" viewbox="0 0 200 200">
 						<circle id="levelCircleBgr" r="80" cx="100" cy="100" fill="none" stroke="#d1b790" stroke-width="24px" />
-						<circle id="levelCircleStroke" r="80" cx="100" cy="100" fill="none" #f25346 stroke="#68c3c0" stroke-width="14px" stroke-dasharray="502" />
+						<circle id="levelCircleStroke" r="80" cx="100" cy="100" fill="none" stroke="#68c3c0" stroke-width="14px" stroke-dasharray="502" />
 					</svg>
 				</div>
 				<div class="score__content score__content--fixed" id="dist">
@@ -47,18 +108,9 @@
 				</div>
 				<div class="score__content" id="lifes">
 					<div class="score__label">life</div>
-					<img class="heart" src="heart.png"/>
-					<img class="heart" src="heart.png"/>
-					<img class="heart" src="heart.png"/>
 				</div>
 			</div>
 		</div>
-
-		<nav class="links">
-			<a href="http://tympanus.net/Development/TextRepetitionEffect/" class="hover-line">Previous demo</a>
-			<a href="https://tympanus.net/codrops/?p=63296" class="hover-line">Article</a>
-			<a href="https://github.com/Badestrand/TheAviator2" class="hover-line">GitHub</a>
-		</nav>
 
 		<div class="world" id="world">
 			<canvas id="threejs-canvas"></canvas>
@@ -109,24 +161,6 @@
 		</div>
 	</div>
 
-
-	<div id="attribution" style="display: none">
-		<p>
-			Sound effects obtained from https://www.zapsplat.com and https://freesound.org/.<br/>
-			<br/>
-			This game uses these following sounds from freesound:<br/>
-			&nbsp;&nbsp;Sound "Crash" by user "Previsionary" (https://freesound.org/people/Previsionary/sounds/593677) licensed under Creative Commons 0<br/>
-			&nbsp;&nbsp;Sound "Bubble Pop" by user "elmasmalo1" (https://freesound.org/people/elmasmalo1/sounds/376968) licensed under Attribution 3.0<br/>
-			&nbsp;&nbsp;Sound "Bullet_Impact_2" by user "toxicwafflezz" (https://freesound.org/people/toxicwafflezz/sounds/150838) licensed under Attribution 3.0<br/>
-			&nbsp;&nbsp;Sound "Pacific Ocean" by user "tim.kahn" (https://freesound.org/people/tim.kahn/sounds/174763) licensed under Attribution 3.0<br/>
-			&nbsp;&nbsp;Sound "Airship propeller engine" by user "ilm0player" (https://freesound.org/people/ilm0player/sounds/578181/) licensed under Creative Commons 0<br/>
-			&nbsp;&nbsp;Sound "Rock Smash" by user "NeoSpica" (https://freesound.org/people/NeoSpica/sounds/512243) licensed under Creative Commons 0<br/>
-			&nbsp;&nbsp;Sound "Gun shot/bullet hit" by user "coolguy244e" (https://freesound.org/people/coolguy244e/sounds/266916) licensed under Creative Commons 0<br/>
-			&nbsp;&nbsp;Sound "Pistol Shot" by user "LeMudCrab" (https://freesound.org/people/LeMudCrab/sounds/163456/) licensed under Creative Commons 0<br/>
-			&nbsp;&nbsp;Sound "Water Splash" by user "Yin_Yang_Jake007" (https://freesound.org/people/Yin_Yang_Jake007/sounds/406087/) licensed under Attribution 3.0<br/>
-			&nbsp;&nbsp;Sound "Coins - 01" by user "DWOBoyle" (https://freesound.org/people/DWOBoyle/sounds/140382/) licensed under Attribution 3.0<br/>
-		</p>
-	</div>
-	<script type="text/javascript" src="/game.js"></script>
+	<script type="text/javascript" src="game.js"></script>
 </body>
 </html>
